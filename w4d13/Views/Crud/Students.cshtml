@@ -1,0 +1,57 @@
+﻿@using System.Data  
+@using System.Data.SqlClient  
+@model System.Data.DataTable  
+@{  
+Layout = null;  
+}  
+<!DOCTYPE html>  
+<html>  
+  
+     <head>  
+          <meta name="viewport" content="width=device-width" />  
+          <title>Home</title>  
+     </head>  
+  
+     <body>  
+          <form method="post" name="Display">  
+               <h2>Home</h2>  
+               @Html.ActionLink("Add New Record", "Insert")  
+               <br />  
+               @{  
+               if (Model.Rows.Count > 0)  
+               {  
+               <table border="1">  
+                    <thead>  
+                         <tr>  
+                              <td>  
+                                   Student ID  
+                              </td>  
+                              <td>  
+                                   Name  
+                              </td>  
+                              <td>  
+                                   Age  
+                              </td>  
+                              <td>Gender</td>  
+                         </tr>  
+                    </thead>  
+                    @foreach (DataRow dr in Model.Rows)  
+                    {  
+                    <tr>  
+                         <td>@dr["id"].ToString() </td>  
+                         <td>@dr["firstname"].ToString() </td>  
+                         <td>@dr["lastname"].ToString() </td>  
+                    </tr>  
+                    }  
+               </table>  
+               <br />  
+               }  
+               else  
+               {  
+               <span> No records found!!</span>  
+               }  
+               }  
+          </form>  
+     </body>  
+  
+</html> 

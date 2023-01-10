@@ -1,0 +1,304 @@
+﻿using System.Data;
+using System.Data.SqlClient;
+using w4d13.Data;
+
+namespace w4d13.Models
+{
+    public class CrudModel
+    {
+        //private readonly string _connectionString;
+
+        private SqlConnection connection;
+
+        private SqlDataAdapter adapter;
+
+        private readonly IConfiguration _configuration;
+
+
+        public CrudModel(IConfiguration configuration)
+        {
+            _configuration = configuration;
+            //_connectionString = _configuration.GetConnectionString("MyConn");
+            //this.connection = new SqlConnection(this._connectionString);
+            this.connection = new SqlConnection(this._configuration.GetConnectionString("MyConn"));
+            this.adapter = null;
+        }
+
+        public DataTable GetAllStudents()
+        {
+            return ExecuteSqlCommand("Select * from Student");
+        }
+
+        public DataTable GetAllCourses()
+        {
+            return ExecuteSqlCommand("Select * from Course");
+        }
+
+        public DataTable GetAllProfessors()
+        {
+            return ExecuteSqlCommand("Select * from Professor");
+        }
+
+        public DataTable GetStudentToCourse()
+        {
+            return ExecuteSqlCommand("Select * from Student_Course");
+        }
+
+
+        public void AddStudent(Student student)
+        {
+            var res = ExecuteSqlCommand(
+                $"INSERT INTO Student VALUES ('{student.FirstName}', '{student.LastName}', '{student.Email}')");
+            return;
+        }
+        public void AddCourse(Course course)
+        {
+            var res = ExecuteSqlCommand(
+                $"INSERT INTO Course VALUES ('{course.Name}', '{course.Description}', '{course.ProfessorId}')");
+            return;
+        }
+
+        public void AddProfessor(Professor prof)
+        {
+            var res = ExecuteSqlCommand(
+                $"INSERT INTO Professor VALUES ('{prof.FirstName}', '{prof.LastName}', '{prof.Email}', '{prof.Office}', '{prof.Title}')");
+            return;
+        }
+
+        public void AssignStudentToCourse(int studentId, int courseId)
+        {
+            DataTable studentToCourses = GetStudentToCourse();
+            bool existing = false;
+            for (int i = 0; i < studentToCourses.Rows.Count; i++)
+            {
+                DataRow row = studentToCourses.Rows[i];
+                if (row["studentId"].ToString() == studentId.ToString() && row["courseId"].ToString() == courseId.ToString())
+                    existing = true;
+            }
+
+            if(!existing)
+            {
+                var newRow = studentToCourses.NewRow();
+                newRow["studentId"] = studentId;
+                newRow["courseId"] = courseId;
+            }
+
+            adapter.Update(studentToCourses);
+            adapter.Dispose();
+        }
+
+        public void AssignProfessorToCourse(int profId, int courseId)
+        {
+            DataTable courses = GetAllCourses();
+            for(int i = 0; i < courses.Rows.Count; i++)
+            {
+                DataRow row = courses.Rows[i];
+                if (row["Id"].ToString() == courseId.ToString())
+                {
+                    courses.Rows[i]["professorId"] = profId;
+                }
+            }
+
+            adapter.Update(courses);
+            adapter.Dispose();
+        }
+
+        public void UpdateStudent(Student student)
+        {
+            DataTable students = GetStudentToCourse();
+            bool existing = false;
+            for (int i = 0; i < students.Rows.Count; i++)
+            {
+                DataRow row = students.Rows[i];
+                if (row["firstname"].ToString() == student.FirstName
+                    && row["lastname"].ToString() == student.LastName
+                    && row["email"].ToString() == student.Email)
+                    existing = true;
+            }
+
+            if (!existing)
+            {
+                var newRow = students.NewRow();
+                newRow["firstname"] = student.FirstName;
+                newRow["lastname"] = student.LastName;
+                newRow["email"] = student.Email;
+            }
+
+            adapter.Update(students);
+            adapter.Dispose();
+        }
+
+        public void UpdateCourse(Course course)
+        {
+            DataTable courses = GetAllCourses();
+            bool existing = false;
+            for (int i = 0; i < courses.Rows.Count; i++)
+            {
+                DataRow row = courses.Rows[i];
+                if (row["name"].ToString() == course.Name
+                    && row["description"].ToString() == course.Description
+                    && row["professorId"].ToString() == course.ProfessorId.ToString())
+                    existing = true;
+            }
+
+            if (!existing)
+            {
+                var newRow = courses.NewRow();
+                newRow["name"] = course.Name;
+                newRow["description"] = course.Description;
+                newRow["professorId"] = course.ProfessorId;  
+            }
+
+            adapter.Update(courses);
+            adapter.Dispose();
+        }
+
+        public void UpdateProfessor(Professor professor)
+        {
+            DataTable professors = GetAllProfessors();
+            bool existing = false;
+            for (int i = 0; i < professors.Rows.Count; i++)
+            {
+                DataRow row = professors.Rows[i];
+                if (row["firstname"].ToString() == professor.FirstName
+                    && row["lastname"].ToString() == professor.LastName
+                    && row["email"].ToString() == professor.Email
+                    && row["office"].ToString() == professor.Office
+                    && row["title"].ToString() == professor.Title)
+                    existing = true;
+            }
+
+            if (!existing)
+            {
+                var newRow = professors.NewRow();
+                newRow["firstname"] = professor.FirstName;
+                newRow["lastname"] = professor.LastName;
+                newRow["email"] = professor.Email;
+                newRow["office"] = professor.Office;
+                newRow["title"] = professor.Title;
+            }
+
+            adapter.Update(professors);
+            adapter.Dispose();
+        }
+
+        public List<Course> FindStudentCoursesByEmail(string email)
+        {
+            var students = GetAllStudents();
+            var courses = GetAllCourses();
+            this.adapter.Dispose();
+            HashSet<string> courseIds = new HashSet<string>();
+            for (int i = 0; i < students.Rows.Count; i++)
+            {
+                DataRow row = students.Rows[i];
+                if (row["email"].ToString() == email)
+                {
+                    courseIds.Add(row["courseId"].ToString());
+                }
+            }
+
+            List<Course> result = new List<Course>();
+            for (int i = 0; i < courses.Rows.Count; i++)
+            {
+                DataRow row = courses.Rows[i];
+                if (courseIds.Contains(row["id"]))
+                {
+                    var c = new Course();
+                    c.Id = Int32.Parse(row["id"].ToString());
+                    c.Name = row["name"].ToString();
+                    c.Description = row["description"].ToString();
+                    c.ProfessorId = Int32.Parse(row["professorId"].ToString());
+                    result.Add(new Course());
+                }
+            }
+
+            return result;
+        }
+
+        public List<Course> FindProfessorCoursesByName(string firstName, string lastName)
+        {
+            var professors = GetAllStudents();
+            var courses = GetAllCourses();
+            this.adapter.Dispose();
+            HashSet<string> professorIds = new HashSet<string>();
+            for (int i = 0; i < professors.Rows.Count; i++)
+            {
+                DataRow row = professors.Rows[i];
+                if (row["FirstName"].ToString() == firstName && row["LastName"].ToString() == lastName)
+                {
+                    professorIds.Add(row["id"].ToString());
+                }
+            }
+
+            List<Course> result = new List<Course>();
+            for (int i = 0; i < courses.Rows.Count; i++)
+            {
+                DataRow row = courses.Rows[i];
+                if (professorIds.Contains(row["professorId"]))
+                {
+                    var c = new Course();
+                    c.Id = Int32.Parse(row["id"].ToString());
+                    c.Name = row["name"].ToString();
+                    c.Description = row["description"].ToString();
+                    c.ProfessorId = Int32.Parse(row["professorId"].ToString());
+                    result.Add(new Course());
+                }
+            }
+
+            return result;
+        }
+
+        public void FindCourseById(int courseId, out Course c, out Professor p)
+        {
+            var professors = GetAllStudents();
+            var courses = GetAllCourses();
+            this.adapter.Dispose();
+            string profId = "";
+            c = new Course();
+            p = new Professor();
+            for (int i = 0; i < courses.Rows.Count; i++)
+            {
+                DataRow row = courses.Rows[i];
+                if (row["id"].ToString() == courseId.ToString())
+                {
+                    profId = row["professorId"].ToString();
+
+                    c.Id = Int32.Parse(row["id"].ToString());
+                    c.Name = row["name"].ToString();
+                    c.Description = row["description"].ToString();
+                    c.ProfessorId = Int32.Parse(row["professorId"].ToString());
+                }
+            }
+
+            for (int i = 0; i < professors.Rows.Count; i++)
+            {
+                DataRow row = courses.Rows[i];
+                if (row["id"].ToString() == profId)
+                {
+                    profId = row["professorId"].ToString();
+                    p.Id = Int32.Parse(row["professorId"].ToString());
+                    p.FirstName = row["firstname"].ToString();
+                    p.LastName = row["lastname"].ToString();
+                    p.Email = row["email"].ToString();
+                    p.Office = row["office"].ToString();
+                    p.Title = row["title"].ToString();
+                }
+            }
+        }
+
+
+        private DataTable ExecuteSqlCommand(string cmdStr)
+        {
+            DataTable dt = new DataTable();
+            connection.Open();
+            SqlCommand cmd = new SqlCommand(cmdStr, connection);
+            if (this.adapter != null)
+                this.adapter.Dispose();
+            adapter = new SqlDataAdapter(cmd);
+            if(adapter != null)
+                adapter.Fill(dt);
+
+            return dt;
+        }
+    }
+}
