@@ -19,10 +19,7 @@ namespace w4d13.Controllers
 
         public IActionResult Index()
         {
-            //var model = new CrudModel();
-            //DataTable dt = model.GetAllStudents();
-            //return View(dt);
-            DataTable dt = CrudModel.GetAllStudents();
+            DataTable dt = CrudModel.ExecuteSqlCommand("select * from student");
             return View("Students", dt);
         }
 

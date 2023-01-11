@@ -9,13 +9,13 @@ Layout = null;
   
      <head>  
           <meta name="viewport" content="width=device-width" />  
-          <title>Home</title>  
+          <title>Professors</title>  
      </head>  
   
      <body>  
           <form method="post" name="Display">  
                <h2>Home</h2>  
-               @Html.ActionLink("Get All Professors", "Insert")  
+               @Html.ActionLink("Get All Students", "GetAllStudents")  
                <br />  
                @{  
                if (Model.Rows.Count > 0)  
@@ -24,15 +24,17 @@ Layout = null;
                     <thead>  
                          <tr>  
                               <td>  
-                                   Student ID  
+                                   Professor ID  
                               </td>  
                               <td>  
-                                   Name  
+                                   FirstName  
                               </td>  
                               <td>  
-                                   Age  
+                                   LastName  
                               </td>  
-                              <td>Gender</td>  
+                              <td>Email</td>
+                              <td>Office</td>  
+                              <td>Title</td>  
                          </tr>  
                     </thead>  
                     @foreach (DataRow dr in Model.Rows)  
@@ -41,6 +43,10 @@ Layout = null;
                          <td>@dr["id"].ToString() </td>  
                          <td>@dr["firstname"].ToString() </td>  
                          <td>@dr["lastname"].ToString() </td>  
+                         <td>@dr["email"].ToString() </td>  
+                         <td>@dr["office"].ToString() </td>  
+                         <td>@dr["title"].ToString() </td>  
+
                     </tr>  
                     }  
                </table>  

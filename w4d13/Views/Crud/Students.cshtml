@@ -15,7 +15,10 @@ Layout = null;
      <body>  
           <form method="post" name="Display">  
                <h2>Home</h2>  
-               @Html.ActionLink("Add New Record", "Insert")  
+               @Html.ActionLink("Get All Professors", "GetAllProfessors") 
+               @Html.ActionLink("Get All Courses", "GetAllCourses")  
+               @Html.ActionLink("AddStudent", "AddStudent")  
+
                <br />  
                @{  
                if (Model.Rows.Count > 0)  
@@ -32,7 +35,7 @@ Layout = null;
                               <td>  
                                    Age  
                               </td>  
-                              <td>Gender</td>  
+                              <td>Email</td>
                          </tr>  
                     </thead>  
                     @foreach (DataRow dr in Model.Rows)  

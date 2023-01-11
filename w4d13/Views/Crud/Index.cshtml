@@ -1,0 +1,27 @@
+﻿@using System.Data  
+@using System.Data.SqlClient  
+@model System.Data.DataTable  
+@{  
+Layout = null;  
+}  
+<!DOCTYPE html>  
+<html>  
+  
+     <head>  
+          <meta name="viewport" content="width=device-width" />  
+          <title>Home</title>  
+     </head>  
+  
+     <body>  
+          <form method="post" name="Display">  
+               <h2>Index</h2>  
+               @Html.ActionLink("Get All Professors", "GetAllProfessors") 
+               @Html.ActionLink("Get All Courses", "GetAllCourses")  
+               @Html.ActionLink("Get All Student", "GetAllStudents")  
+
+               <br />  
+ 
+          </form>  
+     </body>  
+  
+</html> 
