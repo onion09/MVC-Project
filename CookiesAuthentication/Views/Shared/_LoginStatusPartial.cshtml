@@ -1,0 +1,14 @@
+﻿
+@*If this user is not anonymous then...*@
+@if(User.Identity.IsAuthenticated) {
+    // show user's information and provide a button to logout
+    <form method="post" class="form-inline" action="/Account/Logout">
+           Welcome @User.Identity.Name
+        <button type="submit" class="ml-2 btn btn-link">Logout</button>
+    </form>
+}
+@*If this is an anonymous user then...*@
+else {
+    // provide a hyperlink to the login page
+    <a class="btn btn-link" asp-page = "/Account/Login">Login</a>
+}
