@@ -56,6 +56,13 @@ namespace w4d13.Controllers
             return  Ok();
         }
 
+        [HttpPut("[action]")]
+        public IActionResult UpdateStudent(Student student)
+        {
+            CrudModel.UpsertWithSelectCmd("select * from student", student);
+            return Ok();
+        }
+
         [HttpPost("[action]")]
         public IActionResult AddCourse(Course course)
         {
@@ -72,9 +79,27 @@ namespace w4d13.Controllers
         [HttpPost("[action]")]
         public IActionResult AssignStudentToCourse(int studentId, int courseId)
         {
-            //CrudModel.AssignStudentToCourse(studentId, courseId);
+            CrudModel.AssignStudentToCourse( studentId, courseId);
             return Ok();
         }
+
+        [HttpPut("[action]")]
+        public IActionResult AssignProfessorToCourse(int profId, int courseId)
+        {
+            CrudModel.AssignProfessorToCourse(profId, courseId);
+            return Ok();
+        }
+
+        [HttpGet("[action]")]
+        public IActionResult FindStudentCourse(string email)
+        {
+            ViewBag.Greeting = $"FindStudentCourse by {email}";
+            var list = CrudModel.FindStudentCourse(email);
+            ViewBag.Course = list;
+            return View("FindStudentCourse");
+        }
+
+
 
     }
 }

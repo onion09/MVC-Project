@@ -6,6 +6,7 @@ using System.Diagnostics;
 
 namespace w4d13.Models
 {
+    //todo: verify three find functions and add view to it. 
     public class CrudModel
     {
         //private readonly string _connectionString;
@@ -41,7 +42,11 @@ namespace w4d13.Models
          */
         public DataTable UpsertWithSelectCmd(string cmd, object from)
         {
+            // debug hook
+            //cmd = "select 1";
+
             Debug.Assert(cmd.StartsWith("select", StringComparison.OrdinalIgnoreCase));
+
             adapter = new SqlDataAdapter();
             adapter.SelectCommand = new SqlCommand(cmd, connection);
             SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
@@ -152,30 +157,97 @@ namespace w4d13.Models
             adapter.Update(dt);
             return dt;
         }
+        public DataTable AssignStudentToCourse(int studentId, int courseId)
+        {
+            string cmd = "SELECT * FROM student_course";
+            //Debug.Assert(cmd.StartsWith("select", StringComparison.OrdinalIgnoreCase));
+            adapter = new SqlDataAdapter() ;
+            adapter.SelectCommand = new SqlCommand(cmd, connection);
+            SqlCommandBuilder builder = new SqlCommandBuilder(adapter) ;
+            connection.Open();
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+            DataRow dr = dt.NewRow();
+            dr["studentId"] = studentId;
+            dr["courseId"] = courseId;
+            dt.Rows.Add(dr);
+            adapter.Update(dt);
+            return dt;
+        }
+
+        public DataTable AssignProfessorToCourse(int profId, int courseId)
+        {
+            string cmd = "SELECT * FROM course WHERE Id =@id";
+            //Debug.Assert(cmd.StartsWith("select", StringComparison.OrdinalIgnoreCase));
+            adapter = new SqlDataAdapter();
+            adapter.SelectCommand = new SqlCommand(cmd, connection);
+            adapter.SelectCommand.Parameters.AddWithValue("@id", courseId);
+            SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
+            connection.Open();
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+
+            DataRow dr = dt.Rows[0];
+            dr["professorId"] = profId;
+            adapter.Update(dt);
+            return dt;
+        }
+        public DataTable GetAllStudents()
+        {
+            return ExecuteSqlCommand("Select * from Student");
+        }
+
+        public DataTable GetAllCourses()
+        {
+            return ExecuteSqlCommand("Select * from Course");
+        }
+
+        public DataTable GetAllProfessors()
+        {
+            return ExecuteSqlCommand("Select * from Professor");
+        }
+
+        public DataTable GetStudentToCourse()
+        {
+            return ExecuteSqlCommand("Select * from Student_Course");
+        }
+
+        public List<Course> FindStudentCourse(string email)
+        {
+            var students = GetAllStudents();
+            var courses = GetAllCourses();
+            HashSet<string> courseIds = new HashSet<string>();
+            for (int i = 0; i < students.Rows.Count; i++)
+            {
+                DataRow row = students.Rows[i];
+                if (row["email"].ToString() == email)
+                {
+                    courseIds.Add(row["courseId"].ToString());
+                }
+            }
+
+            List<Course> result = new List<Course>();
+            for (int i = 0; i < courses.Rows.Count; i++)
+            {
+                DataRow row = courses.Rows[i];
+                if (courseIds.Contains(row["id"]))
+                {
+                    var c = new Course();
+                    c.Id = Int32.Parse(row["id"].ToString());
+                    c.Name = row["name"].ToString();
+                    c.Description = row["description"].ToString();
+                    c.ProfessorId = Int32.Parse(row["professorId"].ToString());
+                    result.Add(new Course());
+                }
+            }
+
+            return result;
+        }
 
 
 
         // legacy
 
-        //public DataTable GetAllStudents()
-        //{
-        //    return ExecuteSqlCommand("Select * from Student");
-        //}
-
-        //public DataTable GetAllCourses()
-        //{
-        //    return ExecuteSqlCommand("Select * from Course");
-        //}
-
-        //public DataTable GetAllProfessors()
-        //{
-        //    return ExecuteSqlCommand("Select * from Professor");
-        //}
-
-        //public DataTable GetStudentToCourse()
-        //{
-        //    return ExecuteSqlCommand("Select * from Student_Course");
-        //}
 
 
         //public void AddStudent(Student student)

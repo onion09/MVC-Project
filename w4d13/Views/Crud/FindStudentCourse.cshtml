@@ -14,13 +14,16 @@ Layout = null;
   
      <body>  
           <form method="post" name="Display">  
-               <h2>Index</h2>  
-               @Html.ActionLink("Get All Professors", "GetAllProfessors") 
-               @Html.ActionLink("Get All Courses", "GetAllCourses")  
-               @Html.ActionLink("Get All Student", "GetAllStudents")  
-               @Html.ActionLink("Get All Student_Course", "GetStudentToCourse")  
+               <h2>FindStudentCourse</h2>  
+               @Html.ActionLink("Home", "Index")  
+
                <br />  
- 
+              <ul>
+                @foreach (var course in ViewBag.Courses)
+                    {
+                <li>@course.Name</li>
+                    }
+               </ul>
           </form>  
      </body>  
   
