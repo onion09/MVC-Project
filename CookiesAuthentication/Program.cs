@@ -1,3 +1,5 @@
+using CookiesAuthentication.DAL;
+
 namespace CookiesAuthentication
 {
     public class Program
@@ -5,7 +7,7 @@ namespace CookiesAuthentication
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-
+            builder.Services.AddScoped<AccountDao>();
             // Add services to the container.
             //Add authendtication handler
             builder.Services.AddAuthentication("MyCookie").AddCookie("MyCookie", options =>
@@ -44,7 +46,6 @@ namespace CookiesAuthentication
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseAuthorization();
 
             app.MapControllerRoute(
                 name: "default",
