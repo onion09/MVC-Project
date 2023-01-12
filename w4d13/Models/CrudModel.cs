@@ -159,9 +159,9 @@ namespace w4d13.Models
         {
             string cmd = "SELECT * FROM student_course";
             //Debug.Assert(cmd.StartsWith("select", StringComparison.OrdinalIgnoreCase));
-            adapter = new SqlDataAdapter() ;
+            adapter = new SqlDataAdapter();
             adapter.SelectCommand = new SqlCommand(cmd, connection);
-            SqlCommandBuilder builder = new SqlCommandBuilder(adapter) ;
+            SqlCommandBuilder builder = new SqlCommandBuilder(adapter);
             connection.Open();
             DataTable dt = new DataTable();
             adapter.Fill(dt);
@@ -212,17 +212,17 @@ namespace w4d13.Models
 
         public List<Course> FindStudentCourse(string email)
         {
-            string findByEmail = "SELECT c.* FROM Course c INNER JOIN Student_Course sc ON c.Id = sc.CourseId INNER JOIN Student s ON s.Id = sc.StudentId WHERE s.Email = @email"; ;
+            string findByEmail = "SELECT c.* FROM Course c INNER JOIN Student_Course sc ON c.Id = sc.CourseId INNER JOIN Student s ON s.Id = sc.StudentId WHERE s.Email = @email"; 
 
-            using (var conn= connection)
+            using (var conn = connection)
             {
                 conn.Open();
                 var courses = new List<Course>();
                 var cmd = new SqlCommand(findByEmail, conn);
-                cmd.Parameters.AddWithValue("@email",email);
-                using(var reader = cmd.ExecuteReader())
+                cmd.Parameters.AddWithValue("@email", email);
+                using (var reader = cmd.ExecuteReader())
                 {
-                    while(reader.Read())
+                    while (reader.Read())
                     {
                         courses.Add(new Course
                         {
@@ -234,9 +234,23 @@ namespace w4d13.Models
                     }
                 }
 
-                    return courses;
-                }
+                return courses;
             }
+        }
+        //public CourseProfInfo FindCourseById(int courseId)
+        //{
+        //    string findCourseById = "SELECT c.Id,c.name,c.description, " +
+        //        "p.firstname +' ' + p.lastname AS professorName,p.email,p.office,p.title" +
+        //        " FROM Course c INNER JOIN Professor p ON c.ProfessorId = p.Id WHERE c.Id = @courseId";
+        //    using(var conn = connection)
+        //    {
+        //        var courseProfInfo = new CourseProfInfo();
+        //        var cmd = new SqlCommand(findCourseById, conn);
+        //        cmd.Parameters.AddWithValue("@courseId", courseId);
+        //        var dt = cmd.ExecuteReader();   
+        //    }
+        //}
+    }
             
 
 
@@ -490,5 +504,5 @@ namespace w4d13.Models
             //}
 
 
-        }
+        
 }

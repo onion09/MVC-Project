@@ -94,7 +94,7 @@ namespace w4d13.Controllers
         public IActionResult FindStudentCourse(string email)
         {
             List<Course> courses = CrudModel.FindStudentCourse(email);
-            return Ok();
+            return View("Index1", courses);
 
         }
 
