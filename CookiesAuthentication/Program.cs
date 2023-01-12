@@ -23,7 +23,7 @@ namespace CookiesAuthentication
             builder.Services.AddAuthorization(options =>
             {
                 //Add a policy called HROnly, so the page 
-                options.AddPolicy("HROnly", policy => policy.RequireClaim("Department", "HR"));
+                options.AddPolicy("HROnly", policy => policy.RequireClaim("permission", "HR"));
             });
             #endregion
             builder.Services.AddControllersWithViews();
