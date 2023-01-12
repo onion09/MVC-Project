@@ -93,10 +93,9 @@ namespace w4d13.Controllers
         [HttpGet("[action]")]
         public IActionResult FindStudentCourse(string email)
         {
-            ViewBag.Greeting = $"FindStudentCourse by {email}";
-            var list = CrudModel.FindStudentCourse(email);
-            ViewBag.Course = list;
-            return View("FindStudentCourse");
+            List<Course> courses = CrudModel.FindStudentCourse(email);
+            return Ok();
+
         }
 
 
